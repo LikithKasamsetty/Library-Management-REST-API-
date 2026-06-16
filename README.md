@@ -1,9 +1,11 @@
-# Library-Management-REST-API-
+# 📚 Library Management REST API
 
 A fully functional **Spring Boot REST API** for managing a library system.
 Built with Java, Spring Boot, Spring Data JPA, and MySQL.
 
-## Features
+---
+
+## 🚀 Features
 
 - 📖 **Book Management** — Add, view, update, delete books
 - ✍️ **Author Management** — Manage authors and their books
@@ -28,6 +30,20 @@ Built with Java, Spring Boot, Spring Data JPA, and MySQL.
 ---
 
 ## 🗂️ Project Structure
+src/main/java/com/lpu/LibraryManagmentAPI/
+
+├── Controller/         → REST Controllers (API endpoints)
+
+├── Entity/             → JPA Entities (DB tables)
+
+├── Exception/          → Custom exceptions + Global handler
+
+├── Resopsitory/        → Spring Data JPA Repositories
+
+└── Service/            → Business logic layer
+
+---
+
 ## 📡 API Endpoints
 
 ### 📖 Books
@@ -76,6 +92,14 @@ Built with Java, Spring Boot, Spring Data JPA, and MySQL.
 
 ## 🔗 Entity Relationships
 
+Author   ──────< Books                (One-to-Many)
+
+Books    >────── Categories           (Many-to-Many)
+
+User     ──────── Profile             (One-to-One)
+
+User     ──────< BorrowedBooks        (One-to-Many)
+
 ---
 
 ## ⚙️ How to Run Locally
@@ -102,14 +126,43 @@ mvn spring-boot:run
 ```
 
 ### 4. Test the API
-Open your browser or Postman and hit:
+Open Postman or your browser and hit:
+http://localhost:8080/books
+
 ---
 
 ## 📌 Sample Request & Response
 
-### Borrow a Book
+### ➕ Add a Book
 **Request:**
-**Response (Success):**
+POST /books
+
+Content-Type: application/json
+{
+
+"title": "Clean Code",
+
+"isbn": "978-0132350884",
+
+"author": { "id": 1 },
+
+"categories": [{ "id": 1 }]
+
+}
+
+**Response (201):**
+```json
+{
+  "id": 1,
+  "title": "Clean Code",
+  "isbn": "978-0132350884",
+  "borrowed": false
+}
+```
+
+### 🔄 Borrow a Book
+**Request:** PUT /books/1/borrow/2
+**Response (Success - 200):**
 ```json
 {
   "id": 1,
@@ -118,7 +171,8 @@ Open your browser or Postman and hit:
   "borrowed": true,
   "borrowedBy": {
     "id": 2,
-    "name": "Likith"
+    "name": "Likith",
+    "username": "likith123"
   }
 }
 ```
@@ -131,6 +185,43 @@ Open your browser or Postman and hit:
   "message": "Book is already borrowed by someone!"
 }
 ```
+
+### ↩️ Return a Book
+**Request:**  PUT /books/1/return/2
+**Response (Success - 200):**
+```json
+{
+  "id": 1,
+  "title": "Clean Code",
+  "isbn": "978-0132350884",
+  "borrowed": false,
+  "borrowedBy": null
+}
+```
+
+### ❌ Book Not Found
+**Response (404):**
+```json
+{
+  "timestamp": "2025-06-16T10:30:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Book not found with id: 99"
+}
+```
+
+---
+
+## 🗄️ Database Schema (Summary)
+
+| Table | Key Columns |
+|---|---|
+| `books` | id, title, isbn, is_borrowed, author_id, borrowed_by_user_id |
+| `authors` | id, name, bio |
+| `categories` | id, name |
+| `book_categories` | book_id, category_id |
+| `users` | id, name, username, profile_id |
+| `profiles` | id, email, phone, address |
 
 ---
 
